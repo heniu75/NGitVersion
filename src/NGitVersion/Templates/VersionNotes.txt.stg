@@ -1,0 +1,7 @@
+﻿MainTemplate(m) ::= <<
+
+Version : <m.Major>.<m.Minor>.<m.Build>.<m.Revision>
+Build   : <m.BuildConfig>
+Commit  : <m.Commit>
+
+>>

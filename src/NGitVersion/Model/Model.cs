@@ -25,10 +25,13 @@ namespace NGitVersion.Model
             mHash = new Lazy<string>(() => mRepository.Commits.First().Sha);
             mBranch = new Lazy<string>(() => mRepository.Head.CanonicalName);
             mHasLocalChange = new Lazy<string>(() => mRepository.RetrieveStatus().IsDirty.ToString(CultureInfo.InvariantCulture));
+            mBuildConfig = string.Empty;
+
 #if DEBUG
-            mBuildConfig = "DEBUG";
-#else
-            mBuildConfig = "RELEASE";
+            mBuildConfig = "Debug";
+#endif
+#if RELEASE
+            mBuildConfig = "Release";
 #endif
         }
 
@@ -43,11 +46,32 @@ namespace NGitVersion.Model
         public string Build          { get { return "0"; } } // TODO
 
         public string Revision       { get { return mRevision.Value; } }
+
+        public string InfoVersion
+        {
+            get
+            {
+                var v1 = string.Format("{0}.{1}.{2}.{3}, {4}{5}, {6}", Major, Minor, Build, Revision,
+                    Hash, LocalChanges, BuildConfig);
+                return v1;
+            }
+        }
+
         public string ShortHash      { get { return mShortHash.Value; } }
         public string Hash { get { return mHash.Value; } }
+        public string Commit { get { return mHash.Value + LocalChanges; } }
         public string Branch         { get { return mBranch.Value; } }
-        public string HasLocalChange { get { return mHasLocalChange.Value; } }
-        public string BuildConfig    { get { return mBuildConfig; } }
 
+        public string LocalChanges
+        {
+            get
+            {
+                if (Boolean.Parse(mHasLocalChange.Value))
+                    return " +changes";
+                 return string.Empty;
+            }
+        }
+
+        public string BuildConfig    { get { return mBuildConfig; } }
     }
 }
